@@ -102,8 +102,22 @@ public class ShoppingServiceImplTest {
             add(Product.Soup);
             add(Product.Bread);
             add(Product.Bread);
+        }};
+        Basket basket = new Basket(selectedProducts);
+        BasketPriceTotal basketPriceTotal = shoppingService.calculateBasketPrice(basket);
+        assertTrue(BigDecimal.valueOf(2.9).compareTo(basketPriceTotal.getSubTotal()) == 0);
+        assertTrue(BigDecimal.valueOf(2.5).compareTo(basketPriceTotal.getTotal()) == 0);
+    }
+
+    @Test
+    public void calculateBasketPriceMultiBuyMultipleBreadAndSoupCombo() {
+        List<Product> selectedProducts = new ArrayList<Product>() {{
             add(Product.Soup);
             add(Product.Soup);
+            add(Product.Soup);
+            add(Product.Soup);
+            add(Product.Bread);
+            add(Product.Bread);
         }};
         Basket basket = new Basket(selectedProducts);
         BasketPriceTotal basketPriceTotal = shoppingService.calculateBasketPrice(basket);

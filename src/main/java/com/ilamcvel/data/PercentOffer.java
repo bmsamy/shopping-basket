@@ -49,15 +49,23 @@ public class PercentOffer implements Offer {
         if (comboOfferMap == null || comboOfferMap.isEmpty()) {
             return true;
         }
-        for (Product product : comboOfferMap.keySet()) {
-            if (null != basket.getSelectedProductMap().get(product) &&
-                    basket.getSelectedProductMap().get(product) >= comboOfferMap.get(product)) {
-                basket.getSelectedProductMap().compute(product, (p, v) -> v--);
-            } else {
-                return false;
-            }
+
+        boolean hasRequiredComboItems = comboOfferMap.entrySet().stream()
+                .allMatch(e -> basket.getItemsCountMapForOffer().containsKey(e.getKey())
+                        && basket.getItemsCountMapForOffer().get(e.getKey()) >= e.getValue());
+        /**
+         * Remove the item from offer count map so that we dont discount the same item again
+         * eg. Soup,Soup,Bread,Bread
+         */
+        if (hasRequiredComboItems) {
+            comboOfferMap.entrySet().stream()
+                    .filter(e -> basket.getItemsCountMapForOffer().containsKey(e.getKey())
+                            && basket.getItemsCountMapForOffer().get(e.getKey()) >= e.getValue())
+                    .forEach(e -> {
+                        basket.getItemsCountMapForOffer().compute(e.getKey(), (p, v) -> v - e.getValue());
+                    });
         }
-        return true;
+        return hasRequiredComboItems;
     }
 
     /**
